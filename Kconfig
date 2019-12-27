@@ -1,0 +1,48 @@
+menu PS4
+
+    choice IDF_COMPATIBILITY
+        prompt "Framework compatibility"
+        default IDF_COMPATIBILITY_STABLE
+        help
+            The esp32-ps4 project uses internal APIs that can change without notice.
+
+            This option allows you to use older ESP-IDF versions, in case you get compilation
+            errors.
+
+            If you are unsure which master branch revision you should take, figure out what the
+            commit date is of your ESP-IDF version (by running `git show`), and look at the help
+            text of each revision listed here to know their revision date.
+
+        config IDF_COMPATIBILITY_STABLE
+            bool "Latest stable release"
+        config IDF_COMPATIBILITY_MASTER
+            bool "Latest master revision"
+
+        config IDF_COMPATIBILITY_MASTER_21165ED
+            bool "Master branch revision 21165ed and later"
+            help
+                Revision date: 30-June-2019
+                Revision message: Bluetooth component refactoring
+        config IDF_COMPATIBILITY_MASTER_D9CE0BB
+            bool "Master branch revision d9ce0bb and later"
+            help
+                Revision date: 13-March-2019
+                Revision message: Modify esp_bt_gap_set_scan_mode() to be able to set connection modes
+                                    as well as discoverable modes
+        config IDF_COMPATIBILITY_MASTER_21AF1D7
+            bool "Master branch revision 21af1d7 and later"
+            help
+                Revision date: 10-July-2018
+                Revision message: Add Secure Simple Pairing
+    endchoice
+
+    config IDF_COMPATIBILITY
+        int
+        default 1 if IDF_COMPATIBILITY_STABLE
+        default 3 if IDF_COMPATIBILITY_MASTER
+
+        default 3 if IDF_COMPATIBILITY_MASTER_21165ED
+        default 2 if IDF_COMPATIBILITY_MASTER_D9CE0BB
+        default 1 if IDF_COMPATIBILITY_MASTER_21AF1D7
+
+endmenu

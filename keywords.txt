@@ -1,0 +1,16 @@
+PS4Controller KEYWORD1
+PS4 KEYWORD1
+
+begin KEYWORD2
+end KEYWORD2
+isConnected KEYWORD2
+setLed KEYWORD2
+attach KEYWORD2
+attachOnConnect KEYWORD2
+attachOnDisconnect KEYWORD2
+
+data	KEYWORD3
+event	KEYWORD3
+
+button KEYWORD4
+analog KEYWORD4
