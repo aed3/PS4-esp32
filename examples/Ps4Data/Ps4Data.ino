@@ -1,6 +1,6 @@
 #include <PS4Controller.h>
 
-void setUp()
+void setup()
 {
     Serial.begin(9600);
     PS4.begin("03:03:03:03:03:03");
