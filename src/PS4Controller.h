@@ -17,6 +17,7 @@ class PS4Controller
 
         ps4_t data;
         ps4_event_t event;
+        ps4_cmd_t output;
 
         PS4Controller();
 
@@ -26,7 +27,11 @@ class PS4Controller
 
         bool isConnected();
 
-        void setLed(int led);
+        void setLed(int r, int g, int b);
+        void setRumble(int small, int large);
+        void setFlashRate(int onTime, int offTime);
+
+        void sendToController();
 
         void attach(callback_t callback);
         void attachOnConnect(callback_t callback);

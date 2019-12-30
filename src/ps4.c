@@ -9,7 +9,7 @@
 /*                              C O N S T A N T S                               */
 /********************************************************************************/
 
-static const uint8_t hid_cmd_payload_ps4_enable[] = { 0x42, 0x03, 0x00, 0x00 };
+static const uint8_t hid_cmd_payload_ps4_enable[] = { 0x43, 0x02 };
 static const uint8_t hid_cmd_payload_led_arguments[] = { 0xff, 0x27, 0x10, 0x00, 0x32 };
 
 
@@ -102,27 +102,21 @@ void ps4Enable()
 *******************************************************************************/
 void ps4Cmd( ps4_cmd_t cmd )
 {
-    hid_cmd_t hid_cmd = { .data = {0} };
+    hid_cmd_t hid_cmd = { .data = {0x80, 0x00, 0xFF} };
     uint16_t len = sizeof(hid_cmd.data);
 
     hid_cmd.code = hid_cmd_code_set_report | hid_cmd_code_type_output;
     hid_cmd.identifier = hid_cmd_identifier_ps4_control;
 
-    hid_cmd.data[ps4_control_packet_index_rumble_right_duration]  = cmd.rumble_right_duration;
-    hid_cmd.data[ps4_control_packet_index_rumble_right_intensity] = cmd.rumble_right_intensity;
-    hid_cmd.data[ps4_control_packet_index_rumble_left_duration]   = cmd.rumble_left_duration;
-    hid_cmd.data[ps4_control_packet_index_rumble_left_intensity]  = cmd.rumble_left_intensity;
+    hid_cmd.data[ps4_control_packet_index_small_rumble] = cmd.smallRumble; // Small Rumble
+    hid_cmd.data[ps4_control_packet_index_large_rumble] = cmd.largeRumble; // Big rumble
 
-    hid_cmd.data[ps4_control_packet_index_leds] = 0;
-    if (cmd.led1) hid_cmd.data[ps4_control_packet_index_leds] |= ps4_led_mask_led1;
-    if (cmd.led2) hid_cmd.data[ps4_control_packet_index_leds] |= ps4_led_mask_led2;
-    if (cmd.led3) hid_cmd.data[ps4_control_packet_index_leds] |= ps4_led_mask_led3;
-    if (cmd.led4) hid_cmd.data[ps4_control_packet_index_leds] |= ps4_led_mask_led4;
+    hid_cmd.data[ps4_control_packet_index_red] = cmd.r; // Red
+    hid_cmd.data[ps4_control_packet_index_green] = cmd.g; // Green
+    hid_cmd.data[ps4_control_packet_index_blue] = cmd.b; // Blue
 
-    if (cmd.led1) memcpy( hid_cmd.data + ps4_control_packet_index_led1_arguments, hid_cmd_payload_led_arguments, sizeof(hid_cmd_payload_led_arguments));
-    if (cmd.led2) memcpy( hid_cmd.data + ps4_control_packet_index_led2_arguments, hid_cmd_payload_led_arguments, sizeof(hid_cmd_payload_led_arguments));
-    if (cmd.led3) memcpy( hid_cmd.data + ps4_control_packet_index_led3_arguments, hid_cmd_payload_led_arguments, sizeof(hid_cmd_payload_led_arguments));
-    if (cmd.led4) memcpy( hid_cmd.data + ps4_control_packet_index_led4_arguments, hid_cmd_payload_led_arguments, sizeof(hid_cmd_payload_led_arguments));
+    hid_cmd.data[ps4_control_packet_index_flash_on_time] = cmd.flashOn; // Time to flash bright (255 = 2.5 seconds)
+    hid_cmd.data[ps4_control_packet_index_flash_off_time] = cmd.flashOff; // Time to flash dark (255 = 2.5 seconds)
 
     ps4_gap_send_hid( &hid_cmd, len );
 }
@@ -130,24 +124,39 @@ void ps4Cmd( ps4_cmd_t cmd )
 
 /*******************************************************************************
 **
-** Function         ps4SetLed
+** Function         ps4SetLedOnly
 **
-** Description      Sets one of the LEDs on the PS4 controller.
+** Description      Sets the LEDs on the PS4 controller.
 **
 **
 ** Returns          void
 **
 *******************************************************************************/
-void ps4SetLed( uint8_t led )
+void ps4SetLed(uint8_t r, uint8_t g, uint8_t b)
 {
-    ps4_cmd_t cmd = {0};
+    ps4_cmd_t cmd = { 0 };
 
-    cmd.led1 = led == 1;
-    cmd.led2 = led == 2;
-    cmd.led3 = led == 3;
-    cmd.led4 = led == 4;
+    cmd.r = r;
+    cmd.g = g;
+    cmd.b = b;
 
     ps4Cmd(cmd);
+}
+
+
+/*******************************************************************************
+**
+** Function         ps4SetOutput
+**
+** Description      Sets feedback on the PS4 controller.
+**
+**
+** Returns          void
+**
+*******************************************************************************/
+void ps4SetOutput(ps4_cmd_t prev_cmd)
+{
+    ps4Cmd(prev_cmd);
 }
 
 

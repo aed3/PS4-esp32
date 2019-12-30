@@ -5,12 +5,12 @@ begin KEYWORD2
 end KEYWORD2
 isConnected KEYWORD2
 setLed KEYWORD2
+setRumble KEYWORD2
+setFlashRate KEYWORD2
+sendToController KEYWORD2
 attach KEYWORD2
 attachOnConnect KEYWORD2
 attachOnDisconnect KEYWORD2
 
 data	KEYWORD3
 event	KEYWORD3
-
-button KEYWORD4
-analog KEYWORD4

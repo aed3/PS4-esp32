@@ -1,6 +1,6 @@
 #include <PS4Controller.h>
 
-void setUp()
+void setup()
 {
     Serial.begin(9600);
     PS4.begin("03:03:03:03:03:03");
@@ -12,22 +12,22 @@ void loop()
 		// Below has all accessible outputs from the controller
     if(PS4.isConnected()) {
 			
-			if ( PS4.data.button.Up )
+			if ( PS4.data.button.up )
 					Serial.println("Up Button");
-			if ( PS4.data.button.Down )
+			if ( PS4.data.button.down )
 					Serial.println("Down Button");
-			if ( PS4.data.button.Left )
+			if ( PS4.data.button.left )
 					Serial.println("Left Button");
-			if ( PS4.data.button.Right )
+			if ( PS4.data.button.right )
 					Serial.println("Right Button");
 				
-			if ( PS4.data.button.UpRight )
+			if ( PS4.data.button.upright )
 					Serial.println("Up Right");
-			if ( PS4.data.button.UpLeft )
+			if ( PS4.data.button.upleft )
 					Serial.println("Up Left");
-			if ( PS4.data.button.DownLeft )
+			if ( PS4.data.button.downleft )
 					Serial.println("Down Left");
-			if ( PS4.data.button.DownRight )
+			if ( PS4.data.button.downright )
 					Serial.println("Down Right");
 				
 			if ( PS4.data.button.triangle )

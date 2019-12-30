@@ -102,10 +102,14 @@ void ps4_gap_send_hid( hid_cmd_t *hid_cmd, uint8_t len )
 
     result = GAP_ConnBTWrite(gap_handle_hidc, p_buf);
 
-    if (result == BT_PASS)
-        ESP_LOGI(PS4_TAG, "[%s] sending command: success", __func__);
-    else
-        ESP_LOGE(PS4_TAG, "[%s] sending command: failed", __func__);
+    if (result == BT_PASS) {
+        ESP_LOGI(PS4_TAG, "[%s] sending command: success\n", __func__);
+        //printf("[%s] sending command: success", __func__);
+    }
+    else {
+        ESP_LOGE(PS4_TAG, "[%s] sending command: failed\n", __func__);
+        //printf("[%s] sending command: success", __func__);
+    }
 }
 
 

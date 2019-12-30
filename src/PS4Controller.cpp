@@ -3,6 +3,10 @@
 #include <esp_bt_main.h>
 #include <esp_bt_defs.h>
 
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define CONSTRAIN_8BIT(a) MIN(MAX(a, 0), 255)
+
 extern "C" {
 #include  "include/ps4.h"
 }
@@ -76,11 +80,33 @@ bool PS4Controller::isConnected()
 }
 
 
-void PS4Controller::setLed(int led)
+void PS4Controller::setLed(int r, int g, int b)
 {
-    ps4SetLed(led);
-
+    output.r = CONSTRAIN_8BIT(r);
+    output.g = CONSTRAIN_8BIT(g);
+    output.b = CONSTRAIN_8BIT(b);
 }
+
+
+void PS4Controller::setRumble(int small, int large)
+{
+    output.smallRumble = CONSTRAIN_8BIT(small);
+    output.largeRumble = CONSTRAIN_8BIT(large);
+}
+
+
+void PS4Controller::setFlashRate(int onTime, int offTime)
+{
+    output.flashOn = CONSTRAIN_8BIT(onTime/10);
+    output.flashOff = CONSTRAIN_8BIT(offTime/10);
+}
+
+
+void PS4Controller::sendToController()
+{
+    ps4SetOutput(output);
+}
+
 
 
 void PS4Controller::attach(callback_t callback)
@@ -123,10 +149,7 @@ void PS4Controller::_connection_callback(void *object, uint8_t is_connected)
     if (is_connected)
     {
         delay(250);    // ToDo: figure out how to know when the channel is free again so this delay can be removed
-
-        // Set LED1 by default
-        This->setLed(1);
-
+        
         if (This->_callback_connect){
             This->_callback_connect();
         }

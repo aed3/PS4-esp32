@@ -43,7 +43,7 @@
 #endif
 
 /** Size of the output report buffer for the Dualshock and Navigation controllers */
-#define PS4_REPORT_BUFFER_SIZE 48
+#define PS4_REPORT_BUFFER_SIZE 77
 #define PS4_HID_BUFFER_SIZE    50
 
 /********************************************************************************/
@@ -58,7 +58,7 @@ enum hid_cmd_code {
 
 enum hid_cmd_identifier {
     hid_cmd_identifier_ps4_enable  = 0xf4,
-    hid_cmd_identifier_ps4_control = 0x01
+    hid_cmd_identifier_ps4_control = 0x11
 };
 
 
@@ -70,23 +70,15 @@ typedef struct {
 } hid_cmd_t;
 
 enum ps4_control_packet_index {
-    ps4_control_packet_index_rumble_right_duration = 1,
-    ps4_control_packet_index_rumble_right_intensity = 2,
-    ps4_control_packet_index_rumble_left_duration = 3,
-    ps4_control_packet_index_rumble_left_intensity = 4,
+    ps4_control_packet_index_small_rumble = 5,
+    ps4_control_packet_index_large_rumble = 6,
 
-    ps4_control_packet_index_leds = 9,
-    ps4_control_packet_index_led4_arguments = 10,
-    ps4_control_packet_index_led3_arguments = 15,
-    ps4_control_packet_index_led2_arguments = 20,
-    ps4_control_packet_index_led1_arguments = 25
-};
+    ps4_control_packet_index_red = 7,
+    ps4_control_packet_index_green = 8,
+    ps4_control_packet_index_blue = 9,
 
-enum ps4_led_mask {
-    ps4_led_mask_led1 = 1 << 1,
-    ps4_led_mask_led2 = 1 << 2,
-    ps4_led_mask_led3 = 1 << 3,
-    ps4_led_mask_led4 = 1 << 4,
+    ps4_control_packet_index_flash_on_time = 10,
+    ps4_control_packet_index_flash_off_time = 11
 };
 
 

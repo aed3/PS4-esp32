@@ -7,6 +7,8 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+
+#include "time.h"
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
 #define BYTE_TO_BINARY(byte)  \
   (byte & 0x80 ? '1' : '0'), \
@@ -24,6 +26,8 @@
 /********************************************************************************/
 /*                            L O C A L    T Y P E S                            */
 /********************************************************************************/
+
+time_t prevTime = 0;
 
 enum ps4_packet_index {
 		ps4_packet_index_buttons = 15,
@@ -105,6 +109,7 @@ void printBytes2Binary(uint8_t *packet, int byteCount) {
 		int byte = byteCount-4;
 		for (; byte >= 0; byte-=4) {
 			uint32_t toBinary = *((uint32_t*)&packet[byte]);
+            //printf("%d, %d, %d, %d, ", 0xff & (toBinary >> 24), 0xff & (toBinary >> 16), 0xff & (toBinary >> 8), 0xff & toBinary);
 			printf("%d : "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN" : %d\n", (byte+3), BYTE_TO_BINARY(toBinary>>24), BYTE_TO_BINARY(toBinary>>16), BYTE_TO_BINARY(toBinary>>8), BYTE_TO_BINARY(toBinary), byte);
 		}
 		printf("\n");

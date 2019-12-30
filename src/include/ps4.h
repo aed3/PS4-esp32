@@ -114,17 +114,9 @@ typedef struct {
 /*******************/
 
 typedef struct {
-    /* Rumble control */
-    uint8_t rumble_right_duration;
-    uint8_t rumble_right_intensity;
-    uint8_t rumble_left_duration;
-    uint8_t rumble_left_intensity;
-
-    /* LED control */
-    uint8_t led1 : 1;
-    uint8_t led2 : 1;
-    uint8_t led3 : 1;
-    uint8_t led4 : 1;
+    uint8_t smallRumble, largeRumble; // Rumble
+    uint8_t r, g, b; // RGB
+    uint8_t flashOn, flashOff; // Time to flash bright/dark (255 = 2.5 seconds)
 } ps4_cmd_t;
 
 typedef struct {
@@ -165,7 +157,8 @@ void ps4SetConnectionCallback( ps4_connection_callback_t cb );
 void ps4SetConnectionObjectCallback( void *object, ps4_connection_object_callback_t cb );
 void ps4SetEventCallback( ps4_event_callback_t cb );
 void ps4SetEventObjectCallback( void *object, ps4_event_object_callback_t cb );
-void ps4SetLed( uint8_t led );
+void ps4SetLed( uint8_t r, uint8_t g, uint8_t b );
+void ps4SetOutput( ps4_cmd_t prev_cmd );
 void ps4SetBluetoothMacAddress( const uint8_t *mac );
 
 
