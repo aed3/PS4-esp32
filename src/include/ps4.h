@@ -33,7 +33,7 @@ typedef struct {
 /*********************/
 
 typedef struct {
-    uint8_t options   : 1;
+    uint8_t options  : 1;
 	uint8_t l3       : 1;
 	uint8_t r3       : 1;
     uint8_t share    : 1;
@@ -43,10 +43,10 @@ typedef struct {
     uint8_t down     : 1;
     uint8_t left     : 1;
 
-    uint8_t upright   : 1;
-    uint8_t upleft    : 1;
-    uint8_t downright : 1;
-    uint8_t downleft  : 1;
+    uint8_t upright  : 1;
+    uint8_t upleft   : 1;
+    uint8_t downright: 1;
+    uint8_t downleft : 1;
 
     uint8_t l2       : 1;
     uint8_t r2       : 1;
@@ -86,6 +86,7 @@ typedef struct {
     enum ps4_status_connection connection;
     uint8_t charging : 1;
     uint8_t rumbling : 1;
+    uint8_t cmd_sent : 1;
 } ps4_status_t;
 
 
@@ -114,9 +115,11 @@ typedef struct {
 /*******************/
 
 typedef struct {
-    uint8_t smallRumble, largeRumble; // Rumble
+    uint8_t smallRumble;
+    uint8_t largeRumble;
     uint8_t r, g, b; // RGB
-    uint8_t flashOn, flashOff; // Time to flash bright/dark (255 = 2.5 seconds)
+    uint8_t flashOn;
+    uint8_t flashOff; // Time to flash bright/dark (255 = 2.5 seconds)
 } ps4_cmd_t;
 
 typedef struct {

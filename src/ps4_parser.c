@@ -30,7 +30,7 @@
 time_t prevTime = 0;
 
 enum ps4_packet_index {
-		ps4_packet_index_buttons = 15,
+	ps4_packet_index_buttons = 15,
 
     ps4_packet_index_analog_stick_lx = 11,
     ps4_packet_index_analog_stick_ly = 12,
@@ -106,18 +106,29 @@ void ps4_parser_set_event_cb( ps4_event_callback_t cb )
 }
 
 void printBytes2Binary(uint8_t *packet, int byteCount) {
-		int byte = byteCount-4;
-		for (; byte >= 0; byte-=4) {
-			uint32_t toBinary = *((uint32_t*)&packet[byte]);
-            //printf("%d, %d, %d, %d, ", 0xff & (toBinary >> 24), 0xff & (toBinary >> 16), 0xff & (toBinary >> 8), 0xff & toBinary);
-			printf("%d : "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN" : %d\n", (byte+3), BYTE_TO_BINARY(toBinary>>24), BYTE_TO_BINARY(toBinary>>16), BYTE_TO_BINARY(toBinary>>8), BYTE_TO_BINARY(toBinary), byte);
-		}
-		printf("\n");
+	int byte = byteCount-4;
+	for (; byte >= 0; byte-=4) {
+		uint32_t toBinary = *((uint32_t*)&packet[byte]);
+        //printf("%d, %d, %d, %d, ", 0xff & (toBinary >> 24), 0xff & (toBinary >> 16), 0xff & (toBinary >> 8), 0xff & toBinary);
+		printf("%d : "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN" : %d\n", (byte+3), BYTE_TO_BINARY(toBinary>>24), BYTE_TO_BINARY(toBinary>>16), BYTE_TO_BINARY(toBinary>>8), BYTE_TO_BINARY(toBinary), byte);
+	}
+	printf("\n");
+}
+
+void ps4_cmd_sent() {
+    ps4.status.cmd_sent = 1;
 }
 
 void ps4_parse_packet( uint8_t *packet )
 {
     ps4_t prev_ps4 = ps4;
+    if (ps4.status.cmd_sent) packet += 2;
+
+    //time_t newTime = clock();
+    //if (newTime - prevTime > 1000) {
+    //    printBytes2Binary(packet, 32);
+    //    prevTime = newTime;
+    //}
 
     ps4.button        = ps4_parse_packet_buttons(packet);
     ps4.analog.stick  = ps4_parse_packet_analog_stick(packet);
@@ -201,10 +212,10 @@ ps4_event_t ps4_parse_event( ps4_t prev, ps4_t cur )
     ps4_event.button_up.ps       = !prev.button.ps       && cur.button.ps;
     ps4_event.button_up.touchpad = !prev.button.touchpad && cur.button.touchpad;
 
-		ps4_event.analog_move.stick.lx = cur.analog.stick.lx != 0;
-		ps4_event.analog_move.stick.ly = cur.analog.stick.ly != 0;
-		ps4_event.analog_move.stick.rx = cur.analog.stick.rx != 0;
-		ps4_event.analog_move.stick.ry = cur.analog.stick.ry != 0;
+	ps4_event.analog_move.stick.lx = cur.analog.stick.lx != 0;
+	ps4_event.analog_move.stick.ly = cur.analog.stick.ly != 0;
+	ps4_event.analog_move.stick.rx = cur.analog.stick.rx != 0;
+	ps4_event.analog_move.stick.ry = cur.analog.stick.ry != 0;
 
     return ps4_event;
 }

@@ -10,7 +10,6 @@
 /********************************************************************************/
 
 static const uint8_t hid_cmd_payload_ps4_enable[] = { 0x43, 0x02 };
-static const uint8_t hid_cmd_payload_led_arguments[] = { 0xff, 0x27, 0x10, 0x00, 0x32 };
 
 
 /********************************************************************************/
@@ -117,6 +116,7 @@ void ps4Cmd( ps4_cmd_t cmd )
 
     hid_cmd.data[ps4_control_packet_index_flash_on_time] = cmd.flashOn; // Time to flash bright (255 = 2.5 seconds)
     hid_cmd.data[ps4_control_packet_index_flash_off_time] = cmd.flashOff; // Time to flash dark (255 = 2.5 seconds)
+    ps4_cmd_sent();
 
     ps4_gap_send_hid( &hid_cmd, len );
 }
@@ -255,7 +255,7 @@ void ps4SetBluetoothMacAddress( const uint8_t *mac )
 void ps4_connect_event( uint8_t is_connected )
 {
     if(is_connected){
-        ps4Enable();
+       ps4Enable();
     }
 
     if(ps4_connection_cb != NULL)

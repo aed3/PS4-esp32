@@ -40,12 +40,12 @@ void loop()
     // Sets how fast the controller's front light flashes
     // Params: How long the light is on in ms, how long the light is off in ms
     // Range: 0->2550 ms, Set to 0,0 for the light to remain on
-    PS4.setFlashRate(1000, 1000);
+    PS4.setFlashRate(PS4.data.analog.stick.ly*10, PS4.data.analog.stick.ry*10);
 
     // Sets the rumble of the controllers
     // Params: Weak rumble intensity, Strong rumble intensity
     // Range: 0->255
-    PS4.setRumble(100, 0);
+    PS4.setRumble(PS4.data.analog.button.l2, PS4.data.analog.button.r2);
 
     // Sends data set in the above three instructions to the controller
     PS4.sendToController();
