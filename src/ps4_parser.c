@@ -30,15 +30,17 @@
 time_t prevTime = 0;
 
 enum ps4_packet_index {
-	ps4_packet_index_buttons = 15,
+    ps4_packet_index_buttons = 17,
 
-    ps4_packet_index_analog_stick_lx = 11,
-    ps4_packet_index_analog_stick_ly = 12,
-    ps4_packet_index_analog_stick_rx = 13,
-    ps4_packet_index_analog_stick_ry = 14,
+    ps4_packet_index_analog_stick_lx = 13,
+    ps4_packet_index_analog_stick_ly = 14,
+    ps4_packet_index_analog_stick_rx = 15,
+    ps4_packet_index_analog_stick_ry = 16,
 
-    ps4_packet_index_analog_button_l2 = 18,
-    ps4_packet_index_analog_button_r2 = 19
+    ps4_packet_index_analog_button_l2 = 20,
+    ps4_packet_index_analog_button_r2 = 21,
+
+    ps4_packet_index_status = 42
 };
 
 enum ps4_button_mask {
@@ -52,6 +54,8 @@ enum ps4_button_mask {
     ps4_button_mask_downright= 1 + (1 << 1),
     ps4_button_mask_downleft = 1 + (1 << 2),
 
+    ps4_button_mask_arrows   = 0xf,
+
     ps4_button_mask_square   = 1 << 4,
     ps4_button_mask_cross    = 1 << 5,
     ps4_button_mask_circle   = 1 << 6,
@@ -59,7 +63,7 @@ enum ps4_button_mask {
 
     ps4_button_mask_l1       = 1 << 8,
     ps4_button_mask_r1       = 1 << 9,
-		ps4_button_mask_l2       = 1 << 10,
+	ps4_button_mask_l2       = 1 << 10,
     ps4_button_mask_r2       = 1 << 11,
 		
     ps4_button_mask_share    = 1 << 12,
@@ -73,8 +77,10 @@ enum ps4_button_mask {
 };
 
 enum ps4_status_mask {
-    ps4_status_mask_bluetooth = 0x02,
-    ps4_status_mask_rumbling = 0x04
+    ps4_status_mask_battery  = 0xf,
+    ps4_status_mask_charging = 1 << 4,
+    ps4_status_mask_audio    = 1 << 5,
+    ps4_status_mask_mic      = 1 << 6,
 };
 
 
@@ -106,6 +112,7 @@ void ps4_parser_set_event_cb( ps4_event_callback_t cb )
 }
 
 void printBytes2Binary(uint8_t *packet, int byteCount) {
+    packet += 12;
 	int byte = byteCount-4;
 	for (; byte >= 0; byte-=4) {
 		uint32_t toBinary = *((uint32_t*)&packet[byte]);
@@ -115,18 +122,15 @@ void printBytes2Binary(uint8_t *packet, int byteCount) {
 	printf("\n");
 }
 
-void ps4_cmd_sent() {
-    ps4.status.cmd_sent = 1;
-}
-
 void ps4_parse_packet( uint8_t *packet )
 {
     ps4_t prev_ps4 = ps4;
-    if (ps4.status.cmd_sent) packet += 2;
 
     //time_t newTime = clock();
     //if (newTime - prevTime > 1000) {
-    //    printBytes2Binary(packet, 32);
+    //    printf("%c", 255);
+    //    printBytes2Binary(packet, 44);
+    //    printf("Battery = %d\n", ps4.status.battery);
     //    prevTime = newTime;
     //}
 
@@ -134,7 +138,7 @@ void ps4_parse_packet( uint8_t *packet )
     ps4.analog.stick  = ps4_parse_packet_analog_stick(packet);
     ps4.analog.button = ps4_parse_packet_analog_button(packet);
     //ps4.sensor        = ps4_parse_packet_sensor(packet);
-    //ps4.status        = ps4_parse_packet_status(packet);
+    ps4.status        = ps4_parse_packet_status(packet);
 
     ps4_event_t ps4_event = ps4_parse_event( prev_ps4, ps4 );
 
@@ -241,8 +245,8 @@ ps4_analog_button_t ps4_parse_packet_analog_button( uint8_t *packet )
 {
     ps4_analog_button_t ps4_analog_button;
 
-    ps4_analog_button.l2       = packet[ps4_packet_index_analog_button_l2];
-    ps4_analog_button.r2       = packet[ps4_packet_index_analog_button_r2];
+    ps4_analog_button.l2 = packet[ps4_packet_index_analog_button_l2];
+    ps4_analog_button.r2 = packet[ps4_packet_index_analog_button_r2];
 
     return ps4_analog_button;
 }
@@ -255,7 +259,7 @@ ps4_button_t ps4_parse_packet_buttons( uint8_t *packet )
 {
     ps4_button_t ps4_button;
     uint32_t ps4_buttons_raw = *((uint32_t*)&packet[ps4_packet_index_buttons]);
-		uint8_t arrow_buttons_only = 15 & ps4_buttons_raw;
+	uint8_t arrow_buttons_only = ps4_button_mask_arrows & ps4_buttons_raw;
 
     ps4_button.options  = (ps4_buttons_raw & ps4_button_mask_options)  ? true : false;
     ps4_button.l3       = (ps4_buttons_raw & ps4_button_mask_l3)       ? true : false;
@@ -295,11 +299,10 @@ ps4_status_t ps4_parse_packet_status( uint8_t *packet )
 {
     ps4_status_t ps4_status;
 
-    //TODO: Verify if this is correct
-/*     ps4_status.charging   =  packet[ps4_packet_index_status+0] ? true: false;
-    ps4_status.battery    =  packet[ps4_packet_index_status+1];
-    ps4_status.connection = (packet[ps4_packet_index_status+2] & ps4_status_mask_bluetooth) ? ps4_status_connection_bluetooth : ps4_status_connection_usb;
-    ps4_status.rumbling   = (packet[ps4_packet_index_status+2] & ps4_status_mask_rumbling) ? true : false; */
+    ps4_status.battery  = packet[ps4_packet_index_status] & ps4_status_mask_battery;
+    ps4_status.charging = packet[ps4_packet_index_status] & ps4_status_mask_charging ? true : false;
+    ps4_status.audio    = packet[ps4_packet_index_status] & ps4_status_mask_audio    ? true : false;
+    ps4_status.mic      = packet[ps4_packet_index_status] & ps4_status_mask_mic      ? true : false;
 
     return ps4_status;
 }

@@ -67,26 +67,11 @@ typedef struct {
 /*   S T A T U S   F L A G S   */
 /*******************************/
 
-enum ps4_status_battery {
-    ps4_status_battery_shutdown = 0x01,
-    ps4_status_battery_dying    = 0x02,
-    ps4_status_battery_low      = 0x03,
-    ps4_status_battery_high     = 0x04,
-    ps4_status_battery_full     = 0x05,
-    ps4_status_battery_charging = 0xEE
-};
-
-enum ps4_status_connection {
-    ps4_status_connection_usb,
-    ps4_status_connection_bluetooth
-};
-
 typedef struct {
-    enum ps4_status_battery battery;
-    enum ps4_status_connection connection;
+    uint8_t battery;
     uint8_t charging : 1;
-    uint8_t rumbling : 1;
-    uint8_t cmd_sent : 1;
+    uint8_t audio    : 1;
+    uint8_t mic      : 1;
 } ps4_status_t;
 
 
@@ -133,7 +118,6 @@ typedef struct {
     ps4_button_t button;
     ps4_status_t status;
     ps4_sensor_t sensor;
-
 } ps4_t;
 
 

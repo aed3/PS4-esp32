@@ -87,6 +87,7 @@ void ps4Enable()
     memcpy( hid_cmd.data, hid_cmd_payload_ps4_enable, len);
 
     ps4_gap_send_hid( &hid_cmd, len );
+    ps4SetLed(32, 32, 64);
 }
 
 /*******************************************************************************
@@ -116,7 +117,6 @@ void ps4Cmd( ps4_cmd_t cmd )
 
     hid_cmd.data[ps4_control_packet_index_flash_on_time] = cmd.flashOn; // Time to flash bright (255 = 2.5 seconds)
     hid_cmd.data[ps4_control_packet_index_flash_off_time] = cmd.flashOff; // Time to flash dark (255 = 2.5 seconds)
-    ps4_cmd_sent();
 
     ps4_gap_send_hid( &hid_cmd, len );
 }
