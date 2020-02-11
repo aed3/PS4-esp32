@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include "include/ps4.h"
+#include "ps4.h"
 #include "ps4_int.h"
 #include "nvs.h"
 #include "nvs_flash.h"

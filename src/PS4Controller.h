@@ -2,16 +2,14 @@
 #define PS4Controller_h
 
 #include <inttypes.h>
-
 #include "Arduino.h"
 
 extern "C" {
-#include  "include/ps4.h"
+  #include  "ps4.h"
 }
 
 
-class PS4Controller
-{
+class PS4Controller {
     public:
         typedef void(*callback_t)();
 
@@ -48,7 +46,7 @@ class PS4Controller
 };
 
 #if !defined(NO_GLOBAL_INSTANCES)
-extern PS4Controller PS4;
+  extern PS4Controller PS4;
 #endif
 
 #endif

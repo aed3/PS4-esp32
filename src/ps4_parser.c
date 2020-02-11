@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-#include "include/ps4.h"
+#include "ps4.h"
 #include "ps4_int.h"
 #include "esp_log.h"
 
@@ -18,7 +18,7 @@
   (byte & 0x08 ? '1' : '0'), \
   (byte & 0x04 ? '1' : '0'), \
   (byte & 0x02 ? '1' : '0'), \
-  (byte & 0x01 ? '1' : '0') 
+  (byte & 0x01 ? '1' : '0')
 
 #define  PS4_TAG "PS4_PARSER"
 
@@ -65,10 +65,10 @@ enum ps4_button_mask {
     ps4_button_mask_r1       = 1 << 9,
 	ps4_button_mask_l2       = 1 << 10,
     ps4_button_mask_r2       = 1 << 11,
-		
+
     ps4_button_mask_share    = 1 << 12,
     ps4_button_mask_options  = 1 << 13,
-		
+
     ps4_button_mask_l3       = 1 << 14,
     ps4_button_mask_r3       = 1 << 15,
 
@@ -188,38 +188,38 @@ ps4_event_t ps4_parse_event( ps4_t prev, ps4_t cur )
     ps4_event.button_down.touchpad = !prev.button.touchpad && cur.button.touchpad;
 
     /* Button up events */
-    ps4_event.button_up.options  = !prev.button.options  && cur.button.options;
-    ps4_event.button_up.l3       = !prev.button.l3       && cur.button.l3;
-    ps4_event.button_up.r3       = !prev.button.r3       && cur.button.r3;
-    ps4_event.button_up.share    = !prev.button.share    && cur.button.share;
+    ps4_event.button_up.options  = prev.button.options  && !cur.button.options;
+    ps4_event.button_up.l3       = prev.button.l3       && !cur.button.l3;
+    ps4_event.button_up.r3       = prev.button.r3       && !cur.button.r3;
+    ps4_event.button_up.share    = prev.button.share    && !cur.button.share;
 
-    ps4_event.button_up.up       = !prev.button.up       && cur.button.up;
-    ps4_event.button_up.right    = !prev.button.right    && cur.button.right;
-    ps4_event.button_up.down     = !prev.button.down     && cur.button.down;
-    ps4_event.button_up.left     = !prev.button.left     && cur.button.left;
+    ps4_event.button_up.up       = prev.button.up       && !cur.button.up;
+    ps4_event.button_up.right    = prev.button.right    && !cur.button.right;
+    ps4_event.button_up.down     = prev.button.down     && !cur.button.down;
+    ps4_event.button_up.left     = prev.button.left     && !cur.button.left;
 
-    ps4_event.button_up.upright  = !prev.button.upright  && cur.button.upright;
-    ps4_event.button_up.upleft   = !prev.button.upleft   && cur.button.upleft;
-    ps4_event.button_up.downright= !prev.button.downright&& cur.button.downright;
-    ps4_event.button_up.downleft = !prev.button.downleft && cur.button.downleft;
+    ps4_event.button_up.upright  = prev.button.upright  && !cur.button.upright;
+    ps4_event.button_up.upleft   = prev.button.upleft   && !cur.button.upleft;
+    ps4_event.button_up.downright= prev.button.downright&& !cur.button.downright;
+    ps4_event.button_up.downleft = prev.button.downleft && !cur.button.downleft;
 
-    ps4_event.button_up.l2       = !prev.button.l2       && cur.button.l2;
-    ps4_event.button_up.r2       = !prev.button.r2       && cur.button.r2;
-    ps4_event.button_up.l1       = !prev.button.l1       && cur.button.l1;
-    ps4_event.button_up.r1       = !prev.button.r1       && cur.button.r1;
+    ps4_event.button_up.l2       = prev.button.l2       && !cur.button.l2;
+    ps4_event.button_up.r2       = prev.button.r2       && !cur.button.r2;
+    ps4_event.button_up.l1       = prev.button.l1       && !cur.button.l1;
+    ps4_event.button_up.r1       = prev.button.r1       && !cur.button.r1;
 
-    ps4_event.button_up.triangle = !prev.button.triangle && cur.button.triangle;
-    ps4_event.button_up.circle   = !prev.button.circle   && cur.button.circle;
-    ps4_event.button_up.cross    = !prev.button.cross    && cur.button.cross;
-    ps4_event.button_up.square   = !prev.button.square   && cur.button.square;
+    ps4_event.button_up.triangle = prev.button.triangle && !cur.button.triangle;
+    ps4_event.button_up.circle   = prev.button.circle   && !cur.button.circle;
+    ps4_event.button_up.cross    = prev.button.cross    && !cur.button.cross;
+    ps4_event.button_up.square   = prev.button.square   && !cur.button.square;
 
-    ps4_event.button_up.ps       = !prev.button.ps       && cur.button.ps;
-    ps4_event.button_up.touchpad = !prev.button.touchpad && cur.button.touchpad;
+    ps4_event.button_up.ps       = prev.button.ps       && !cur.button.ps;
+    ps4_event.button_up.touchpad = prev.button.touchpad && !cur.button.touchpad;
 
-	ps4_event.analog_move.stick.lx = cur.analog.stick.lx != 0;
-	ps4_event.analog_move.stick.ly = cur.analog.stick.ly != 0;
-	ps4_event.analog_move.stick.rx = cur.analog.stick.rx != 0;
-	ps4_event.analog_move.stick.ry = cur.analog.stick.ry != 0;
+  	ps4_event.analog_move.stick.lx = cur.analog.stick.lx != 0;
+  	ps4_event.analog_move.stick.ly = cur.analog.stick.ly != 0;
+  	ps4_event.analog_move.stick.rx = cur.analog.stick.rx != 0;
+  	ps4_event.analog_move.stick.ry = cur.analog.stick.ry != 0;
 
     return ps4_event;
 }
@@ -259,7 +259,7 @@ ps4_button_t ps4_parse_packet_buttons( uint8_t *packet )
 {
     ps4_button_t ps4_button;
     uint32_t ps4_buttons_raw = *((uint32_t*)&packet[ps4_packet_index_buttons]);
-	uint8_t arrow_buttons_only = ps4_button_mask_arrows & ps4_buttons_raw;
+	  uint8_t arrow_buttons_only = ps4_button_mask_arrows & ps4_buttons_raw;
 
     ps4_button.options  = (ps4_buttons_raw & ps4_button_mask_options)  ? true : false;
     ps4_button.l3       = (ps4_buttons_raw & ps4_button_mask_l3)       ? true : false;
