@@ -91,7 +91,7 @@ void loop()
      if (PS4.data.status.mic)
         Serial.println("The controller has a mic attached");
 
-     Serial.print("Battey Percent : ");
+     Serial.print("Battery Percent : ");
      Serial.println(PS4.data.status.battery, DEC);
 
 		 Serial.println();
