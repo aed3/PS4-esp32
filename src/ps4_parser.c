@@ -63,7 +63,7 @@ enum ps4_button_mask {
 
     ps4_button_mask_l1       = 1 << 8,
     ps4_button_mask_r1       = 1 << 9,
-	ps4_button_mask_l2       = 1 << 10,
+    ps4_button_mask_l2       = 1 << 10,
     ps4_button_mask_r2       = 1 << 11,
 
     ps4_button_mask_share    = 1 << 12,
