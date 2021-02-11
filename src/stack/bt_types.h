@@ -19,49 +19,35 @@
 #ifndef BT_TYPES_H
 #define BT_TYPES_H
 
-#include <stdint.h>
 #include <stdbool.h>
-
-typedef uint8_t UINT8;
-typedef uint16_t UINT16;
-typedef uint32_t UINT32;
-typedef uint64_t UINT64;
-
-typedef int8_t INT8;
-typedef int16_t INT16;
-typedef int32_t INT32;
-typedef bool BOOLEAN;
-
+#include <stdint.h>
 
 /* Define the header of each buffer used in the Bluetooth stack.
-*/
+ */
 typedef struct {
-    uint16_t          event;
-    uint16_t          len;
-    uint16_t          offset;
-    uint16_t          layer_specific;
-    uint8_t           data[];
+  uint16_t event;
+  uint16_t length;
+  uint16_t offset;
+  uint16_t layer_specific;
+  uint8_t data[];
 } BT_HDR;
 
-
-#define BT_PSM_HIDC                     0x0011
-#define BT_PSM_HIDI                     0x0013
-
+#define BT_PSM_HID_CONTROL 0x0011
+#define BT_PSM_HID_INTERRUPT 0x0013
 
 typedef struct {
-    UINT8               qos_flags;          /* TBD */
-    UINT8               service_type;       /* see below */
-    UINT32              token_rate;         /* bytes/second */
-    UINT32              token_bucket_size;  /* bytes */
-    UINT32              peak_bandwidth;     /* bytes/second */
-    UINT32              latency;            /* microseconds */
-    UINT32              delay_variation;    /* microseconds */
+  uint8_t qos_flags;          /* TBD */
+  uint8_t service_type;       /* see below */
+  uint32_t token_rate;        /* bytes/second */
+  uint32_t token_bucket_size; /* bytes */
+  uint32_t peak_bandwidth;    /* bytes/second */
+  uint32_t latency;           /* microseconds */
+  uint32_t delay_variation;   /* microseconds */
 } FLOW_SPEC;
-
 
 /* bd addr length and type */
 #ifndef BD_ADDR_LEN
-#define BD_ADDR_LEN     6
+#define BD_ADDR_LEN 6
 typedef uint8_t BD_ADDR[BD_ADDR_LEN];
 #endif
 

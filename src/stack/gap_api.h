@@ -1,40 +1,23 @@
-/******************************************************************************
- *
- *  Copyright (C) 2009-2013 Broadcom Corporation
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at:
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- ******************************************************************************/
-
 #ifndef GAP_API_H
 #define GAP_API_H
 
-#include "stack/profiles_api.h"
-#include "stack/btm_api.h"
 #include "stack/l2c_api.h"
 
 /*****************************************************************************
 **  Constants
 *****************************************************************************/
 /*** GAP Error and Status Codes ***/
-#define GAP_EVT_CONN_OPENED         0x0100
-#define GAP_EVT_CONN_CLOSED         0x0101
-#define GAP_EVT_CONN_DATA_AVAIL     0x0102
-#define GAP_EVT_CONN_CONGESTED      0x0103
-#define GAP_EVT_CONN_UNCONGESTED    0x01043
+#define GAP_EVT_CONN_OPENED 0x0100
+#define GAP_EVT_CONN_CLOSED 0x0101
+#define GAP_EVT_CONN_DATA_AVAIL 0x0102
+#define GAP_EVT_CONN_CONGESTED 0x0103
+#define GAP_EVT_CONN_UNCONGESTED 0x01043
 
 /*** used in connection variables and functions ***/
-#define GAP_INVALID_HANDLE      0xFFFF
+#define GAP_INVALID_HANDLE 0xFFFF
+
+/*** Used for general successful function returns ***/
+#define BT_PASS 0
 
 /*****************************************************************************
 **  Type Definitions
@@ -42,8 +25,7 @@
 /*
 ** Callback function for connection services
 */
-typedef void (tGAP_CONN_CALLBACK) (UINT16 gap_handle, UINT16 event);
-
+typedef void(tGAP_CONN_CALLBACK)(uint16_t gap_handle, uint16_t event);
 
 /*****************************************************************************
 **  External Function Declarations
@@ -60,10 +42,9 @@ typedef void (tGAP_CONN_CALLBACK) (UINT16 gap_handle, UINT16 event);
 ** Returns          handle of the connection if successful, else GAP_INVALID_HANDLE
 **
 *******************************************************************************/
-extern UINT16 GAP_ConnOpen (const char *p_serv_name, UINT8 service_id, BOOLEAN is_server,
-                            BD_ADDR p_rem_bda, UINT16 psm, tL2CAP_CFG_INFO *p_cfg,
-                            tL2CAP_ERTM_INFO *ertm_info,
-                            UINT16 security, UINT8 chan_mode_mask, tGAP_CONN_CALLBACK *p_cb);
+extern uint16_t GAP_ConnOpen(const char* p_serv_name, uint8_t service_id, bool is_server, BD_ADDR p_rem_bda,
+  uint16_t psm, tL2CAP_CFG_INFO* p_cfg, tL2CAP_ERTM_INFO* ertm_info, uint16_t security, uint8_t chan_mode_mask,
+  tGAP_CONN_CALLBACK* p_cb);
 
 /*******************************************************************************
 **
@@ -75,7 +56,7 @@ extern UINT16 GAP_ConnOpen (const char *p_serv_name, UINT8 service_id, BOOLEAN i
 **                  GAP_ERR_BAD_HANDLE  - invalid handle
 **
 *******************************************************************************/
-extern UINT16 GAP_ConnClose (UINT16 gap_handle);
+extern uint16_t GAP_ConnClose(uint16_t gap_handle);
 
 /*******************************************************************************
 **
@@ -90,7 +71,7 @@ extern UINT16 GAP_ConnClose (UINT16 gap_handle);
 **                  GAP_NO_DATA_AVAIL   - no data available
 **
 *******************************************************************************/
-extern UINT16 GAP_ConnBTRead (UINT16 gap_handle, BT_HDR **pp_buf);
+extern uint16_t GAP_ConnBTRead(uint16_t gap_handle, BT_HDR** pp_buf);
 
 /*******************************************************************************
 **
@@ -104,7 +85,7 @@ extern UINT16 GAP_ConnBTRead (UINT16 gap_handle, BT_HDR **pp_buf);
 **                  GAP_ERR_BAD_STATE       - connection not established
 **                  GAP_INVALID_BUF_OFFSET  - buffer offset is invalid
 *******************************************************************************/
-extern UINT16 GAP_ConnBTWrite (UINT16 gap_handle, BT_HDR *p_buf);
+extern uint16_t GAP_ConnBTWrite(uint16_t gap_handle, BT_HDR* p_buf);
 
 /*******************************************************************************
 **
@@ -114,10 +95,10 @@ extern UINT16 GAP_ConnBTWrite (UINT16 gap_handle, BT_HDR *p_buf);
 **
 ** Parameters:      handle      - Handle of the connection
 **
-** Returns          UINT16      - The L2CAP channel id
+** Returns          uint16_t      - The L2CAP channel id
 **                  0, if error
 **
 *******************************************************************************/
-extern UINT16 GAP_ConnGetL2CAPCid (UINT16 gap_handle);
+extern uint16_t GAP_ConnGetL2CAPCid(uint16_t gap_handle);
 
-#endif  /* GAP_API_H */
+#endif /* GAP_API_H */

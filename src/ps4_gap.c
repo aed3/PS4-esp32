@@ -1,52 +1,43 @@
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <string.h>
-#include "ps4.h"
-#include "ps4_int.h"
-#include "esp_log.h"
 #include "esp_bt.h"
 #include "esp_bt_main.h"
 #include "esp_gap_bt_api.h"
-#include "stack/gap_api.h"
-#include "stack/bt_types.h"
+#include "esp_log.h"
 #include "osi/allocator.h"
+#include "ps4.h"
+#include "ps4_int.h"
+#include "stack/bt_types.h"
+#include "stack/gap_api.h"
 
-
-#define  PS4_TAG "PS4_GAP"
-
-
-#define PS4_GAP_ID_HIDC 0x40
-#define PS4_GAP_ID_HIDI 0x41
-
+#define PS4_TAG "PS4_GAP"
+#define BTM_SEC_SERVICE_FIRST_EMPTY 51
+#define BT_DEFAULT_BUFFER_SIZE (4096 + 16)
 
 /********************************************************************************/
 /*              L O C A L    F U N C T I O N     P R O T O T Y P E S            */
 /********************************************************************************/
 
-static uint16_t ps4_gap_init_service( char *name, uint16_t psm, uint8_t security_id);
-static void ps4_gap_event_handle(UINT16 gap_handle, UINT16 event);
-static void ps4_gap_update_connected ();
-
+static uint16_t gapInitService(char* name, uint16_t psm, uint8_t securityID);
+static void gapEventHandle(uint16_t gapHandle, uint16_t event);
+static void gapUpdateConnected();
 
 /********************************************************************************/
 /*                         L O C A L    V A R I A B L E S                       */
 /********************************************************************************/
-static tL2CAP_ERTM_INFO ps4_ertm_info = {0};
-static tL2CAP_CFG_INFO ps4_cfg_info = {0};
+static tL2CAP_ERTM_INFO ertmInfo = {0};
+static tL2CAP_CFG_INFO cfgInfo = {0};
 
-uint16_t gap_handle_hidc = GAP_INVALID_HANDLE;
-uint16_t gap_handle_hidi = GAP_INVALID_HANDLE;
+uint16_t gapHandleHIDControl = GAP_INVALID_HANDLE;
+uint16_t gapHandleHIDInterrupt = GAP_INVALID_HANDLE;
 
-static bool is_connected = false;
-
+static bool isConnected = false;
 
 /********************************************************************************/
 /*                      P U B L I C    F U N C T I O N S                        */
 /********************************************************************************/
 /*******************************************************************************
 **
-** Function         ps4_gap_is_connected
+** Function         gapIsConnected
 **
 ** Description      This returns whether a PS4 controller is connected, based
 **                  on whether a successful handshake has taken place.
@@ -54,64 +45,55 @@ static bool is_connected = false;
 ** Returns          void
 **
 *******************************************************************************/
-bool ps4_gap_is_connected()
-{
-    return is_connected;
-}
+bool gapIsConnected() { return isConnected; }
 
 /*******************************************************************************
 **
-** Function         ps4_gap_init_services
+** Function         gapInitServices
 **
 ** Description      This function initialises the required GAP services.
 **
 ** Returns          void
 **
 *******************************************************************************/
-void ps4_gap_init_services()
-{
-    gap_handle_hidc = ps4_gap_init_service( "PS4-HIDC", BT_PSM_HIDC, BTM_SEC_SERVICE_FIRST_EMPTY   );
-    gap_handle_hidi = ps4_gap_init_service( "PS4-HIDI", BT_PSM_HIDI, BTM_SEC_SERVICE_FIRST_EMPTY+1 );
+void gapInitServices() {
+  gapHandleHIDControl = gapInitService("PS4-HIDC", BT_PSM_HID_CONTROL, BTM_SEC_SERVICE_FIRST_EMPTY);
+  gapHandleHIDInterrupt = gapInitService("PS4-HIDI", BT_PSM_HID_INTERRUPT, BTM_SEC_SERVICE_FIRST_EMPTY + 1);
 }
-
 
 /*******************************************************************************
 **
-** Function         ps4_gap_send_hid
+** Function         gapSendHid
 **
 ** Description      This function sends the HID command using the GAP service.
 **
 ** Returns          void
 **
 *******************************************************************************/
-void ps4_gap_send_hid( hid_cmd_t *hid_cmd, uint8_t len )
-{
-    uint8_t result;
-    BT_HDR     *p_buf;
+void gapSendHid(hid_cmd_t* hidCommand, uint8_t length) {
+  uint8_t result;
+  BT_HDR* buffer;
 
-    p_buf = (BT_HDR *)osi_malloc(BT_DEFAULT_BUFFER_SIZE);
+  buffer = (BT_HDR*)osi_malloc(BT_DEFAULT_BUFFER_SIZE);
 
-    if( !p_buf ){
-        ESP_LOGE(PS4_TAG, "[%s] allocating buffer for sending the command failed", __func__);
-    }
+  if (!buffer) {
+    ESP_LOGE(PS4_TAG, "[%s] allocating buffer for sending the command failed", __func__);
+  }
 
-    p_buf->len = len + ( sizeof(*hid_cmd) - sizeof(hid_cmd->data) );
-    p_buf->offset = L2CAP_MIN_OFFSET;
+  buffer->length = length + (sizeof(*hidCommand) - sizeof(hidCommand->data));
+  buffer->offset = L2CAP_MIN_OFFSET;
 
-    memcpy ((uint8_t *)(p_buf + 1) + p_buf->offset, (uint8_t*)hid_cmd, p_buf->len);
+  memcpy((uint8_t*)(buffer + 1) + buffer->offset, (uint8_t*)hidCommand, buffer->length);
 
-    result = GAP_ConnBTWrite(gap_handle_hidc, p_buf);
+  result = GAP_ConnBTWrite(gapHandleHIDControl, buffer);
 
-    if (result == BT_PASS) {
-        ESP_LOGI(PS4_TAG, "[%s] sending command: success\n", __func__);
-        //printf("[%s] sending command: success", __func__);
-    }
-    else {
-        ESP_LOGE(PS4_TAG, "[%s] sending command: failed\n", __func__);
-        //printf("[%s] sending command: success", __func__);
-    }
+  if (result == BT_PASS) {
+    ESP_LOGI(PS4_TAG, "[%s] sending command: success\n", __func__);
+  }
+  else {
+    ESP_LOGE(PS4_TAG, "[%s] sending command: failed\n", __func__);
+  }
 }
-
 
 /********************************************************************************/
 /*                      L O C A L    F U N C T I O N S                          */
@@ -119,7 +101,7 @@ void ps4_gap_send_hid( hid_cmd_t *hid_cmd, uint8_t len )
 
 /*******************************************************************************
 **
-** Function         ps4_gap_init_service
+** Function         gapInitService
 **
 ** Description      This registers the specified bluetooth service in order
 **                  to listen for incoming connections.
@@ -127,25 +109,23 @@ void ps4_gap_send_hid( hid_cmd_t *hid_cmd, uint8_t len )
 ** Returns          The created GAP handle
 **
 *******************************************************************************/
-static uint16_t ps4_gap_init_service( char *name, uint16_t psm, uint8_t security_id)
-{
-    uint16_t handle = GAP_ConnOpen (name, security_id, /*is_server=*/true, /*p_rem_bda=*/NULL,
-                     psm, &ps4_cfg_info, &ps4_ertm_info, /*security=*/0, /*chan_mode_mask=*/0,
-                     ps4_gap_event_handle);
+static uint16_t gapInitService(char* name, uint16_t psm, uint8_t securityID) {
+  uint16_t handle = GAP_ConnOpen(name, securityID, /*is_server=*/true, /*p_rem_bda=*/NULL, psm, &cfgInfo,
+    &ertmInfo, /*security=*/0, /*chan_mode_mask=*/0, gapEventHandle);
 
-    if (handle == GAP_INVALID_HANDLE){
-        ESP_LOGE(PS4_TAG, "%s Registering GAP service %s failed", __func__, name);
-    }else{
-        ESP_LOGI(PS4_TAG, "[%s] GAP Service %s Initialized: %d", __func__, name, handle);
-    }
+  if (handle == GAP_INVALID_HANDLE) {
+    ESP_LOGE(PS4_TAG, "%s Registering GAP service %s failed", __func__, name);
+  }
+  else {
+    ESP_LOGI(PS4_TAG, "[%s] GAP Service %s Initialized: %d", __func__, name, handle);
+  }
 
-    return handle;
+  return handle;
 }
-
 
 /*******************************************************************************
 **
-** Function         ps4_gap_event_handle
+** Function         gapEventHandle
 **
 ** Description      Callback for GAP events, currently handling the connection
 **                  opened, connection closed, and data available events.
@@ -153,54 +133,45 @@ static uint16_t ps4_gap_init_service( char *name, uint16_t psm, uint8_t security
 ** Returns          void
 **
 *******************************************************************************/
-static void ps4_gap_event_handle(UINT16 gap_handle, UINT16 event)
-{
-    switch(event){
-        case GAP_EVT_CONN_OPENED:
-        case GAP_EVT_CONN_CLOSED:{
-            uint8_t was_connected = is_connected;
-            ps4_gap_update_connected();
+static void gapEventHandle(uint16_t gapHandle, uint16_t event) {
+  switch (event) {
+    case GAP_EVT_CONN_OPENED:
+    case GAP_EVT_CONN_CLOSED: {
+      bool wasConnected = isConnected;
+      gapUpdateConnected();
 
-            if(was_connected != is_connected){
-                ps4_connect_event(is_connected);
-            }
+      if (wasConnected != isConnected) {
+        ps4ConnectEvent(isConnected);
+      }
 
-            break;
-        }
-
-        case GAP_EVT_CONN_DATA_AVAIL: {
-            BT_HDR *p_buf;
-
-            GAP_ConnBTRead(gap_handle, &p_buf);
-
-            if ( p_buf->len > 2 )
-            {
-                ps4_parse_packet( p_buf->data );
-            }
-
-            osi_free( p_buf );
-
-            break;
-        }
-
-        default:
-            break;
+      break;
     }
-}
+    case GAP_EVT_CONN_DATA_AVAIL: {
+      BT_HDR* buffer;
+      GAP_ConnBTRead(gapHandle, &buffer);
 
+      if (buffer->length > 2) {
+        parsePacket(buffer->data);
+      }
+
+      osi_free(buffer);
+      break;
+    }
+    default:
+      break;
+  }
+}
 
 /*******************************************************************************
 **
-** Function         ps4_gap_update_connected
+** Function         gapUpdateConnected
 **
-** Description      This updates the is_connected flag by checking if the
+** Description      This updates the isConnected flag by checking if the
 **                  GAP handles return valid L2CAP channel IDs.
 **
 ** Returns          void
 **
 *******************************************************************************/
-static void ps4_gap_update_connected()
-{
-    is_connected = GAP_ConnGetL2CAPCid(gap_handle_hidc) != 0
-                && GAP_ConnGetL2CAPCid(gap_handle_hidi) != 0;
+static void gapUpdateConnected() {
+  isConnected = GAP_ConnGetL2CAPCid(gapHandleHIDControl) != 0 && GAP_ConnGetL2CAPCid(gapHandleHIDInterrupt) != 0;
 }

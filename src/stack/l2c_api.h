@@ -35,25 +35,20 @@
 /* Define the minimum offset that L2CAP needs in a buffer. This is made up of
 ** HCI type(1), len(2), handle(2), L2CAP len(2) and CID(2) => 9
 */
-#define L2CAP_MIN_OFFSET    13     /* plus control(2), SDU length(2) */
-
+#define L2CAP_MIN_OFFSET 13 /* plus control(2), SDU length(2) */
 
 /*****************************************************************************
 **  Type Definitions
 *****************************************************************************/
 
 typedef struct {
-#define L2CAP_FCR_BASIC_MODE    0x00
-#define L2CAP_FCR_ERTM_MODE     0x03
-#define L2CAP_FCR_STREAM_MODE   0x04
+  uint8_t mode;
 
-    UINT8  mode;
-
-    UINT8  tx_win_sz;
-    UINT8  max_transmit;
-    UINT16 rtrans_tout;
-    UINT16 mon_tout;
-    UINT16 mps;
+  uint8_t tx_win_sz;
+  uint8_t max_transmit;
+  uint16_t rtrans_tout;
+  uint16_t mon_tout;
+  uint16_t mps;
 } tL2CAP_FCR_OPTS;
 
 /* Define a structure to hold the configuration parameters. Since the
@@ -61,33 +56,32 @@ typedef struct {
 ** use to signify its presence or absence.
 */
 typedef struct {
-    UINT16      result;                 /* Only used in confirm messages */
-    BOOLEAN     mtu_present;
-    UINT16      mtu;
-    BOOLEAN     qos_present;
-    FLOW_SPEC   qos;
-    BOOLEAN     flush_to_present;
-    UINT16      flush_to;
-    BOOLEAN     fcr_present;
-    tL2CAP_FCR_OPTS fcr;
-    BOOLEAN     fcs_present;            /* Optionally bypasses FCS checks */
-    UINT8       fcs;                    /* '0' if desire is to bypass FCS, otherwise '1' */
-    BOOLEAN               ext_flow_spec_present;
-    tHCI_EXT_FLOW_SPEC    ext_flow_spec;
-    UINT16      flags;                  /* bit 0: 0-no continuation, 1-continuation */
+  uint16_t result; /* Only used in confirm messages */
+  bool mtu_present;
+  uint16_t mtu;
+  bool qos_present;
+  FLOW_SPEC qos;
+  bool flush_to_present;
+  uint16_t flush_to;
+  bool fcr_present;
+  tL2CAP_FCR_OPTS fcr;
+  bool fcs_present; /* Optionally bypasses FCS checks */
+  uint8_t fcs;      /* '0' if desire is to bypass FCS, otherwise '1' */
+  bool ext_flow_spec_present;
+  tHCI_EXT_FLOW_SPEC ext_flow_spec;
+  uint16_t flags; /* bit 0: 0-no continuation, 1-continuation */
 } tL2CAP_CFG_INFO;
 
 /* Define the structure that applications use to create or accept
 ** connections with enhanced retransmission mode.
 */
 typedef struct {
-    UINT8       preferred_mode;
-    UINT8       allowed_modes;
-    UINT16      user_rx_buf_size;
-    UINT16      user_tx_buf_size;
-    UINT16      fcr_rx_buf_size;
-    UINT16      fcr_tx_buf_size;
-
+  uint8_t preferred_mode;
+  uint8_t allowed_modes;
+  uint16_t user_rx_buf_size;
+  uint16_t user_tx_buf_size;
+  uint16_t fcr_rx_buf_size;
+  uint16_t fcr_tx_buf_size;
 } tL2CAP_ERTM_INFO;
 
-#endif  /* L2C_API_H */
+#endif /* L2C_API_H */
