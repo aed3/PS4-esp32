@@ -48,7 +48,7 @@ void loop() {
   if (PS4.isConnected()) {
     // Prints the 64 bytes of data the controller sends
     // to the ESP32 every second
-    printBits(PS4.LatestPacket(), 64);
     delay(1000);
+    printBits(PS4.LatestPacket(), 64);
   }
 }
