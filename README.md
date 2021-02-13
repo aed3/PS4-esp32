@@ -4,6 +4,8 @@ Use a PS4 controller with an ESP32
 This is heavily based on the work of Jeffery Pernis to connect a PS3 controller to an ESP32.
 You can find that here: https://github.com/jvpernis/esp32-ps3
 
+[Here's a video](https://youtu.be/BmlKBs27pgE) about how this library was made.
+
 This repo can be downloaded as a zip file and imported into the Arduino IDE as a library.
 
 ## Installation
