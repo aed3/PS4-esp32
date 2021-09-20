@@ -41,7 +41,7 @@ bool PS4Controller::begin() {
   return true;
 }
 
-bool PS4Controller::begin(char* mac) {
+bool PS4Controller::begin(const char* mac) {
   esp_bd_addr_t addr;
     
   if (sscanf(mac, ESP_BD_ADDR_STR, ESP_BD_ADDR_HEX_PTR(addr)) != ESP_BD_ADDR_LEN) {
@@ -54,7 +54,7 @@ bool PS4Controller::begin(char* mac) {
   return begin();
 }
 
-bool PS4Controller::end() {}
+void PS4Controller::end() {}
 
 bool PS4Controller::isConnected() { return ps4IsConnected(); }
 

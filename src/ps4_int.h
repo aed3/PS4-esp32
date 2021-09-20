@@ -24,7 +24,7 @@
 #define IDF_COMPATIBILITY_MASTER_21AF1D7 1
 
 #ifndef CONFIG_IDF_COMPATIBILITY
-#define CONFIG_IDF_COMPATIBILITY IDF_COMPATIBILITY_MASTER_21AF1D7
+#define CONFIG_IDF_COMPATIBILITY IDF_COMPATIBILITY_MASTER_21165ED
 #endif
 
 /** Size of the output report buffer for the Dualshock and Navigation
@@ -70,7 +70,7 @@ enum ps4_control_packet_index {
 /********************************************************************************/
 
 void ps4ConnectEvent(uint8_t isConnected);
-void ps4PacketEvent(ps4_t ps4, ps4_event_t event, uint8_t* packet);
+void ps4PacketEvent(ps4_t ps4, ps4_event_t event);
 
 /********************************************************************************/
 /*                      P A R S E R   F U N C T I O N S */
@@ -88,8 +88,8 @@ void sppInit();
 /*                          G A P   F U N C T I O N S */
 /********************************************************************************/
 
-bool gapIsConnected();
-void gapInitServices();
-void gapSendHid(hid_cmd_t* hid_cmd, uint8_t len);
+void ps4_l2cap_init_services();
+void ps4_l2cap_deinit_services();
+void ps4_l2cap_send_hid(hid_cmd_t *hid_cmd, uint8_t len);
 
 #endif
