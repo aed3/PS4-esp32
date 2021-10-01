@@ -15,9 +15,6 @@
 #define  PS4_TAG "PS4_L2CAP"
 
 
-#define PS4_L2CAP_ID_HIDC 0x41
-#define PS4_L2CAP_ID_HIDI 0x40
-
 
 /********************************************************************************/
 /*              L O C A L    F U N C T I O N     P R O T O T Y P E S            */
@@ -56,6 +53,8 @@ static const tL2CAP_APPL_INFO dyn_info = {
 static tL2CAP_CFG_INFO ps4_cfg_info;
 
 bool is_connected = false;
+uint16_t l2cap_control_channel = 0;
+uint16_t l2cap_interrupt_channel = 0;
 
 
 /********************************************************************************/
@@ -115,7 +114,10 @@ void ps4_l2cap_send_hid( hid_cmd_t *hid_cmd, uint8_t len ) {
 
     memcpy((uint8_t *)(p_buf + 1) + p_buf->offset, (uint8_t*)hid_cmd, p_buf->length);
 
-    result = L2CA_DataWrite( PS4_L2CAP_ID_HIDC, p_buf );
+    if (l2cap_control_channel == 0) {
+        ESP_LOGE(PS4_TAG, "[%s] l2cap_control_channel not initialized.", __func__);
+    }
+    result = L2CA_DataWrite(l2cap_control_channel, p_buf );
 
     if (result == L2CAP_DW_SUCCESS)
         ESP_LOGI(PS4_TAG, "[%s] sending command: success", __func__);
@@ -195,6 +197,12 @@ static void ps4_l2cap_connect_ind_cback (BD_ADDR  bd_addr, uint16_t l2cap_cid, u
 
     /* Send a Configuration Request. */
     L2CA_CONFIG_REQ(l2cap_cid, &ps4_cfg_info);
+
+    if (psm == BT_PSM_HID_CONTROL) {
+        l2cap_control_channel = l2cap_cid;
+    } else if (psm == BT_PSM_HID_INTERRUPT) {
+        l2cap_interrupt_channel = l2cap_cid;
+    }
 }
 
 
@@ -228,10 +236,10 @@ void ps4_l2cap_config_cfm_cback(uint16_t l2cap_cid, tL2CAP_CFG_INFO *p_cfg) {
 
     /* The PS4 controller is connected after    */
     /* receiving the second config confirmation */
-    is_connected = l2cap_cid == PS4_L2CAP_ID_HIDI;
-
-    if(is_connected){
-        ps4Enable();
+    bool prev_is_connected = is_connected;
+    is_connected = l2cap_cid == l2cap_interrupt_channel;
+    if (prev_is_connected != is_connected) {
+        ps4ConnectEvent(is_connected);
     }
 }
 
@@ -267,6 +275,11 @@ void ps4_l2cap_config_ind_cback(uint16_t l2cap_cid, tL2CAP_CFG_INFO *p_cfg) {
 *******************************************************************************/
 void ps4_l2cap_disconnect_ind_cback(uint16_t l2cap_cid, bool ack_needed) {
     ESP_LOGI(PS4_TAG, "[%s] l2cap_cid: 0x%02x\n  ack_needed: %d", __func__, l2cap_cid, ack_needed );
+    is_connected = false;
+    if (ack_needed) {
+        L2CA_DisconnectRsp(l2cap_cid);
+    }
+    ps4ConnectEvent(is_connected);
 }
 
 

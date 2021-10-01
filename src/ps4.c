@@ -23,7 +23,7 @@ static ps4_event_callback_t ps4_event_cb = NULL;
 static ps4_event_object_callback_t ps4_event_object_cb = NULL;
 static void* ps4_event_object = NULL;
 
-static bool is_active = true;
+static bool is_active = false;
 
 /********************************************************************************/
 /*                      P U B L I C    F U N C T I O N S */
