@@ -29,11 +29,11 @@ Therefore, if you want to connect your PS4 controller to the ESP32, you either n
 
 Whichever path you choose, you might want a tool to read and/or write the currently paired MAC address from the PS4 controller. You can try using [sixaxispairer](https://github.com/user-none/sixaxispairer) for this purpose.
 
-If you opted to change the ESP32's MAC address, you'll need to include the ip address in the ```PS4.begin()``` function during within the ```setup()``` Arduino function like below where ```03:03:03:03:03:03``` is the MAC address:
+If you opted to change the ESP32's MAC address, you'll need to include the ip address in the ```PS4.begin()``` function during within the ```setup()``` Arduino function like below where ```1a:2b:3c:01:01:01``` is the MAC address (**note that MAC address must be unicast**):
 ```
 void setup()
 {
-    PS4.begin("03:03:03:03:03:03");
+    PS4.begin("1a:2b:3c:01:01:01");
     Serial.println("Ready.");
 }
 ```
