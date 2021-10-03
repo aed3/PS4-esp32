@@ -98,7 +98,7 @@ void parsePacket(uint8_t* packet) {
 
   ps4_event_t ps4Event = parseEvent(prev_ps4, ps4);
 
-  ps4PacketEvent(ps4, ps4Event, packet);
+  ps4PacketEvent(ps4, ps4Event);
 }
 
 /********************************************************************************/

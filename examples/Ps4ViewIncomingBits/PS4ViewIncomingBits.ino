@@ -38,9 +38,10 @@ void printBits(uint8_t* packet, int byteCount) {
 void setup() {
   Serial.begin(115200);
 
-  // Replace the "03:03:03:03:03:03" with the MAC address
+  // Replace the "1a:2b:3c:01:01:01" with the MAC address
   // the controller wants to pair to
-  PS4.begin("03:03:03:03:03:03");
+  // Note: MAC address must be unicast
+  PS4.begin("1a:2b:3c:01:01:01");
   Serial.println("Ready.");
 }
 

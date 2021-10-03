@@ -126,7 +126,7 @@ typedef struct {
 typedef void (*ps4_connection_callback_t)(uint8_t isConnected);
 typedef void (*ps4_connection_object_callback_t)(void* object, uint8_t isConnected);
 
-typedef void (*ps4_event_callback_t)(ps4_t ps4, ps4_event_t event, uint8_t* packet);
+typedef void (*ps4_event_callback_t)(ps4_t ps4, ps4_event_t event);
 typedef void (*ps4_event_object_callback_t)(void* object, ps4_t ps4, ps4_event_t event);
 
 /********************************************************************************/

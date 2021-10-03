@@ -1,6 +1,7 @@
 #include "ps4.h"
 
 #include <esp_system.h>
+#include <string.h>
 
 #include "ps4_int.h"
 
@@ -22,6 +23,8 @@ static ps4_event_callback_t ps4_event_cb = NULL;
 static ps4_event_object_callback_t ps4_event_object_cb = NULL;
 static void* ps4_event_object = NULL;
 
+static bool is_active = false;
+
 /********************************************************************************/
 /*                      P U B L I C    F U N C T I O N S */
 /********************************************************************************/
@@ -39,7 +42,7 @@ static void* ps4_event_object = NULL;
 *******************************************************************************/
 void ps4Init() {
   sppInit();
-  gapInitServices();
+  ps4_l2cap_init_services();
 }
 
 /*******************************************************************************
@@ -53,7 +56,7 @@ void ps4Init() {
 ** Returns          bool
 **
 *******************************************************************************/
-bool ps4IsConnected() { return gapIsConnected(); }
+bool ps4IsConnected() { return is_active; }
 
 /*******************************************************************************
 **
@@ -75,7 +78,7 @@ void ps4Enable() {
 
   memcpy(hidCommand.data, hid_cmd_payload_ps4_enable, length);
 
-  gapSendHid(&hidCommand, length);
+  ps4_l2cap_send_hid(&hidCommand, length);
   ps4SetLed(32, 32, 200);
 }
 
@@ -108,7 +111,7 @@ void ps4Cmd(ps4_cmd_t cmd) {
   // Time to flash dark (255 = 2.5 seconds)
   hidCommand.data[ps4_control_packet_index_flash_off_time] = cmd.flashOff;
 
-  gapSendHid(&hidCommand, length);
+  ps4_l2cap_send_hid(&hidCommand, length);
 }
 
 /*******************************************************************************
@@ -225,26 +228,35 @@ void ps4SetBluetoothMacAddress(const uint8_t* mac) {
 /*                      L O C A L    F U N C T I O N S */
 /********************************************************************************/
 
-void ps4ConnectEvent(uint8_t isConnected) {
-  if (isConnected) {
-    ps4Enable();
-  }
-
-  if (ps4_connection_cb != NULL) {
-    ps4_connection_cb(isConnected);
-  }
-
-  if (ps4_connection_object_cb != NULL && ps4_connection_object != NULL) {
-    ps4_connection_object_cb(ps4_connection_object, isConnected);
-  }
+void ps4ConnectEvent(uint8_t is_connected) {
+    if (is_connected) {
+        ps4Enable();
+    } else {
+        is_active = false;
+    }
 }
 
-void ps4PacketEvent(ps4_t ps4, ps4_event_t event, uint8_t* packet) {
-  if (ps4_event_cb != NULL) {
-    ps4_event_cb(ps4, event, packet);
-  }
 
-  if (ps4_event_object_cb != NULL && ps4_event_object != NULL) {
-    ps4_event_object_cb(ps4_event_object, ps4, event);
-  }
+void ps4PacketEvent(ps4_t ps4, ps4_event_t event) {
+    // Trigger packet event, but if this is the very first packet
+    // after connecting, trigger a connection event instead
+    if (is_active) {
+        if(ps4_event_cb != NULL) {
+            ps4_event_cb(ps4, event);
+        }
+
+        if (ps4_event_object_cb != NULL && ps4_event_object != NULL) {
+            ps4_event_object_cb(ps4_event_object, ps4, event);
+        }
+    } else {
+        is_active = true;
+
+        if(ps4_connection_cb != NULL) {
+            ps4_connection_cb(is_active);
+        }
+
+        if (ps4_connection_object_cb != NULL && ps4_connection_object != NULL) {
+            ps4_connection_object_cb(ps4_connection_object, is_active);
+        }
+    }
 }

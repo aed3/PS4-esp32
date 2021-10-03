@@ -18,8 +18,8 @@ class PS4Controller {
   PS4Controller();
 
   bool begin();
-  bool begin(char* mac);
-  bool end();
+  bool begin(const char* mac);
+  void end();
 
   bool isConnected();
 
