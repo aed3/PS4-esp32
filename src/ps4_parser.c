@@ -141,38 +141,39 @@ ps4_event_t parseEvent(ps4_t prev, ps4_t cur) {
   ps4Event.button_down.touchpad = !prev.button.touchpad && cur.button.touchpad;
 
   /* Button up events */
-  ps4Event.button_down.right = prev.button.right && !cur.button.right;
-  ps4Event.button_down.down = prev.button.down && !cur.button.down;
-  ps4Event.button_down.up = prev.button.up && !cur.button.up;
-  ps4Event.button_down.left = prev.button.left && !cur.button.left;
+  ps4Event.button_up.right = prev.button.right && !cur.button.right;
+  ps4Event.button_up.down = prev.button.down && !cur.button.down;
+  ps4Event.button_up.up = prev.button.up && !cur.button.up;
+  ps4Event.button_up.left = prev.button.left && !cur.button.left;
 
-  ps4Event.button_down.square = prev.button.square && !cur.button.square;
-  ps4Event.button_down.cross = prev.button.cross && !cur.button.cross;
-  ps4Event.button_down.circle = prev.button.circle && !cur.button.circle;
-  ps4Event.button_down.triangle = prev.button.triangle && !cur.button.triangle;
+  ps4Event.button_up.square = prev.button.square && !cur.button.square;
+  ps4Event.button_up.cross = prev.button.cross && !cur.button.cross;
+  ps4Event.button_up.circle = prev.button.circle && !cur.button.circle;
+  ps4Event.button_up.triangle = prev.button.triangle && !cur.button.triangle;
 
-  ps4Event.button_down.upright = prev.button.upright && !cur.button.upright;
-  ps4Event.button_down.downright = prev.button.downright && !cur.button.downright;
-  ps4Event.button_down.upleft = prev.button.upleft && !cur.button.upleft;
-  ps4Event.button_down.downleft = prev.button.downleft && !cur.button.downleft;
+  ps4Event.button_up.upright = prev.button.upright && !cur.button.upright;
+  ps4Event.button_up.downright = prev.button.downright && !cur.button.downright;
+  ps4Event.button_up.upleft = prev.button.upleft && !cur.button.upleft;
+  ps4Event.button_up.downleft = prev.button.downleft && !cur.button.downleft;
 
-  ps4Event.button_down.l1 = prev.button.l1 && !cur.button.l1;
-  ps4Event.button_down.r1 = prev.button.r1 && !cur.button.r1;
-  ps4Event.button_down.l2 = prev.button.l2 && !cur.button.l2;
-  ps4Event.button_down.r2 = prev.button.r2 && !cur.button.r2;
+  ps4Event.button_up.l1 = prev.button.l1 && !cur.button.l1;
+  ps4Event.button_up.r1 = prev.button.r1 && !cur.button.r1;
+  ps4Event.button_up.l2 = prev.button.l2 && !cur.button.l2;
+  ps4Event.button_up.r2 = prev.button.r2 && !cur.button.r2;
 
-  ps4Event.button_down.share = prev.button.share && !cur.button.share;
-  ps4Event.button_down.options = prev.button.options && !cur.button.options;
-  ps4Event.button_down.l3 = prev.button.l3 && !cur.button.l3;
-  ps4Event.button_down.r3 = prev.button.r3 && !cur.button.r3;
+  ps4Event.button_up.share = prev.button.share && !cur.button.share;
+  ps4Event.button_up.options = prev.button.options && !cur.button.options;
+  ps4Event.button_up.l3 = prev.button.l3 && !cur.button.l3;
+  ps4Event.button_up.r3 = prev.button.r3 && !cur.button.r3;
 
-  ps4Event.button_down.ps = prev.button.ps && !cur.button.ps;
-  ps4Event.button_down.touchpad = prev.button.touchpad && !cur.button.touchpad;
+  ps4Event.button_up.ps = prev.button.ps && !cur.button.ps;
+  ps4Event.button_up.touchpad = prev.button.touchpad && !cur.button.touchpad;
 
-  ps4Event.analog_move.stick.lx = cur.analog.stick.lx != 0;
-  ps4Event.analog_move.stick.ly = cur.analog.stick.ly != 0;
-  ps4Event.analog_move.stick.rx = cur.analog.stick.rx != 0;
-  ps4Event.analog_move.stick.ry = cur.analog.stick.ry != 0;
+  /* Analog move events */
+  ps4Event.analog_move.stick.lx = cur.analog.stick.lx != prev.analog.stick.lx;
+  ps4Event.analog_move.stick.ly = cur.analog.stick.ly != prev.analog.stick.ly;
+  ps4Event.analog_move.stick.rx = cur.analog.stick.rx != prev.analog.stick.rx;
+  ps4Event.analog_move.stick.ry = cur.analog.stick.ry != prev.analog.stick.ry;
 
   return ps4Event;
 }
