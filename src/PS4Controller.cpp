@@ -4,8 +4,12 @@
 #include <esp_bt_main.h>
 
 extern "C" {
+#include  "esp_bt_device.h"
 #include "ps4.h"
 }
+
+#define ESP_BD_ADDR_HEX_STR        "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx"
+#define ESP_BD_ADDR_HEX_ARR(addr)   addr[0],  addr[1],  addr[2],  addr[3],  addr[4],  addr[5]
 
 #define ESP_BD_ADDR_HEX_PTR(addr) \
   (uint8_t*)addr + 0, (uint8_t*)addr + 1, (uint8_t*)addr + 2, \
@@ -55,6 +59,22 @@ bool PS4Controller::begin(const char* mac) {
 }
 
 void PS4Controller::end() {}
+
+String PS4Controller::getAddress() {
+    String address = "";
+
+    if (btStarted()) {
+        char mac[18];
+        const uint8_t* addr = esp_bt_dev_get_address();
+
+        sprintf(mac, ESP_BD_ADDR_STR, ESP_BD_ADDR_HEX_ARR(addr));
+
+        address = String(mac);
+    }
+
+    return address;
+}
+
 
 bool PS4Controller::isConnected() { return ps4IsConnected(); }
 
