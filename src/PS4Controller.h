@@ -21,6 +21,8 @@ class PS4Controller {
   bool begin(const char* mac);
   void end();
 
+  String getAddress();
+
   bool isConnected();
 
   void setLed(uint8_t r, uint8_t g, uint8_t b);
