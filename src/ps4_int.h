@@ -19,13 +19,48 @@
 #endif  // ARDUINO_ARCH_ESP32
 
 /** ESP-IDF compatibility configuration option choices */
-#define IDF_COMPATIBILITY_MASTER_21165ED 3
-#define IDF_COMPATIBILITY_MASTER_D9CE0BB 2
-#define IDF_COMPATIBILITY_MASTER_21AF1D7 1
+// #define IDF_COMPATIBILITY_MASTER_21165ED 3
+// #define IDF_COMPATIBILITY_MASTER_D9CE0BB 2
+// #define IDF_COMPATIBILITY_MASTER_21AF1D7 1
 
-#ifndef CONFIG_IDF_COMPATIBILITY
-#define CONFIG_IDF_COMPATIBILITY IDF_COMPATIBILITY_MASTER_21165ED
+// #ifndef CONFIG_IDF_COMPATIBILITY
+// #define CONFIG_IDF_COMPATIBILITY IDF_COMPATIBILITY_MASTER_21165ED
+
+/* Detect ESP-IDF releases */
+#if __has_include("esp_idf_version.h")
+#include <esp_idf_version.h>
+
+#else
+
+/* Detect Arduino releases */
+#if __has_include("core_version.h")
+#include <core_version.h>
 #endif
+
+/* Arduino releases using IDF v3.2.3 */
+#if defined(ARDUINO_ESP32_RELEASE_1_0_4) || defined(ARDUINO_ESP32_RELEASE_1_0_3)
+#define ESP_IDF_VERSION_MAJOR 3
+#define ESP_IDF_VERSION_MINOR 2
+#define ESP_IDF_VERSION_PATCH 3
+#endif
+
+/* Arduino releases using IDF v3.2.2 */
+#if defined(ARDUINO_ESP32_RELEASE_1_0_3) || defined(ARDUINO_ESP32_RELEASE_1_0_2) || defined(ARDUINO_ESP32_RELEASE_1_0_1) || defined(ARDUINO_ESP32_RELEASE_1_0_0)
+#define ESP_IDF_VERSION_MAJOR 3
+#define ESP_IDF_VERSION_MINOR 2
+#define ESP_IDF_VERSION_PATCH 2
+#endif
+
+// Macro to convert IDF version number into an integer
+#define ESP_IDF_VERSION_VAL(major, minor, patch) ((major << 16) | (minor << 8) | (patch))
+
+// Current IDF version, as an integer
+#define ESP_IDF_VERSION  ESP_IDF_VERSION_VAL(ESP_IDF_VERSION_MAJOR, \
+                                             ESP_IDF_VERSION_MINOR, \
+                                             ESP_IDF_VERSION_PATCH)
+
+#endif // __has_include("esp_idf_version.h")
+
 
 /** Size of the output report buffer for the Dualshock and Navigation
  * controllers */
